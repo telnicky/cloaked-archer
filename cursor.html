@@ -24,6 +24,60 @@ var cpos = [42,20];
 
 var svg = d3.select("body").append("svg");
 
+/*
+ * Holds map of id to circle for other users
+ */
+var others = {};
+
+/*
+ * Expects a map of user ids to coordinate pairs
+ */
+function update(map)
+{
+   //console.log("update map: ");
+   for(key in map)
+   {
+   	 //console.log(key + ": " + map[key]);
+   	 //console.log("key is " + key);
+     if (!(key in others))
+     {
+     	others[key] = svg.append("circle")
+				         .style("stroke", "gray")
+				         .style("fill", "blue")
+				         .attr("r", 40)
+				         .attr("cx", map[key][0])
+				         .attr("cy", map[key][1]);
+     }
+     else
+     {
+   	    others[key].transition()
+                   .attr("cx",map[key][0])
+                   .attr("cy",map[key][1]);
+     }
+   }
+
+   //console.log("\r\n");
+}
+
+/*
+ * Gets all the new positions for others
+ * For now it's random.
+ */
+function getUpdates()
+{
+	var dict = {};
+    for (var i = 0; i < 10; i++)
+    {
+     var b = Math.floor(Math.random()*1000);
+     var c = Math.floor(Math.random()*1000);
+     dict[i] = [b,c];
+    }
+    return dict;
+}
+
+/*
+ * This user's circle
+ */
 var mcirc = svg.append("circle")
         .style("stroke", "gray")
         .style("fill", "red")
@@ -35,13 +89,12 @@ var mcirc = svg.append("circle")
 setInterval(function()
         {
 
-        	d3.select('html') // Selects the 'html' element
-                .on('mousemove', function()
+        	d3.select('html').on('mousemove', function()
                   {
-                    cpos = d3.mouse(this); // Gets the mouse coordinates with respect to
-                                                  // the top of the page (because I selected
-                                                  // 'html')
+                    cpos = d3.mouse(this); 
                   });
+         	 
+             update(getUpdates());
 
              mcirc.transition()
                  .attr("cx",cpos[0])
