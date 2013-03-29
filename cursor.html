@@ -1,0 +1,34 @@
+<html>
+
+<head>
+<title>Cursor</title>
+
+<body>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+var timer = null;
+var coordinates = [0,0];
+
+
+setInterval(function()
+        {
+
+        	d3.select('html') // Selects the 'html' element
+                .on('mousemove', function()
+                  {
+                    coordinates = d3.mouse(this); // Gets the mouse coordinates with respect to
+                                                  // the top of the page (because I selected
+                                                  // 'html')
+                  });
+
+          document.write("c:(" + coordinates + ")\r\n");
+        }, 100);
+
+</script>
+
+</body>
+
+</html>
