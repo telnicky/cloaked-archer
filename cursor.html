@@ -3,44 +3,34 @@
 <head>
 <title>Cursor</title>
 
+<style>
+
+</style>
+
+</head>
+
+
+
+
 <body>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
-
-<div id="trace"></div>
 
 <script>
 
 var timer = null;
 var cpos = [42,20];
 
-//document.write(cpos[0] + ", " + cpos[1]);
+var svg = d3.select("body").append("svg");
 
-
-var sampleSVG = d3.select("#trace")
-        .append("svg")
-        .attr("width", 1000)
-        .attr("height", 1000); 
-
-sampleSVG.append("circle")
+var mcirc = svg.append("circle")
         .style("stroke", "gray")
         .style("fill", "red")
         .attr("r", 40)
         .attr("cx", 50)
         .attr("cy", 50);
 
-/*
-var mySquare=svg.append("rect")
-  .attr("x", 0)
-  .attr("y", 0)
-  .attr("width", 60)
-  .attr("height", 60);
-*/
-
-sampleSVG.transition()
-             .attr("cx",100)
-             .attr("cy",150);
 
 setInterval(function()
         {
@@ -52,11 +42,11 @@ setInterval(function()
                                                   // the top of the page (because I selected
                                                   // 'html')
                   });
-/*
-         sampleSVG.transition()
-             .attr("cx",cpos[0])
-             .attr("cy",cpos[1]);
-*/
+
+             mcirc.transition()
+                 .attr("cx",cpos[0])
+                 .attr("cy",cpos[1]);
+    
           //document.write("(" + cpos[0] +", "+ cpos[0] + ")\r\n");
         }, 100);
 
