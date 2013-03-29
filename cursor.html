@@ -7,11 +7,40 @@
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
+
+<div id="trace"></div>
+
 <script>
 
 var timer = null;
-var coordinates = [0,0];
+var cpos = [42,20];
 
+//document.write(cpos[0] + ", " + cpos[1]);
+
+
+var sampleSVG = d3.select("#trace")
+        .append("svg")
+        .attr("width", 1000)
+        .attr("height", 1000); 
+
+sampleSVG.append("circle")
+        .style("stroke", "gray")
+        .style("fill", "red")
+        .attr("r", 40)
+        .attr("cx", 50)
+        .attr("cy", 50);
+
+/*
+var mySquare=svg.append("rect")
+  .attr("x", 0)
+  .attr("y", 0)
+  .attr("width", 60)
+  .attr("height", 60);
+*/
+
+sampleSVG.transition()
+             .attr("cx",100)
+             .attr("cy",150);
 
 setInterval(function()
         {
@@ -19,12 +48,16 @@ setInterval(function()
         	d3.select('html') // Selects the 'html' element
                 .on('mousemove', function()
                   {
-                    coordinates = d3.mouse(this); // Gets the mouse coordinates with respect to
+                    cpos = d3.mouse(this); // Gets the mouse coordinates with respect to
                                                   // the top of the page (because I selected
                                                   // 'html')
                   });
-
-          document.write("c:(" + coordinates + ")\r\n");
+/*
+         sampleSVG.transition()
+             .attr("cx",cpos[0])
+             .attr("cy",cpos[1]);
+*/
+          //document.write("(" + cpos[0] +", "+ cpos[0] + ")\r\n");
         }, 100);
 
 </script>
