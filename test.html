@@ -1,6 +1,7 @@
 <html>
   <head>
   <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js'></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
   </head>
   <body>
     <div id="debug"></div>
@@ -44,6 +45,90 @@
       function update_cursor() {
         
       }
-    </script>
+    
+
+    <!-- cirlces -->
+    
+      var timer = null;
+      var cpos = [42,20];
+
+      var svg = d3.select("body").append("svg");
+
+      /*
+       * Holds map of id to circle for other users
+       */
+      var others = {};
+
+      /*
+       * Expects a map of user ids to coordinate pairs
+       */
+      function update(map)
+      {         
+         for(key in map)
+         {    
+           if (!(key in others))
+           {
+              others[key] = svg.append("circle")
+                               .style("stroke", "gray")
+                               .style("fill", "blue")
+                               .attr("r", 40)
+                               .attr("cx", map[key][0])
+                               .attr("cy", map[key][1]);
+           }
+           else
+           {
+              others[key].transition()
+                         .attr("cx",map[key][0])
+                         .attr("cy",map[key][1]);
+           }
+         }        
+      }
+
+      /*
+       * Gets all the new positions for others
+       * For now it's random.
+       */
+      function getUpdates()
+      {
+        var dict = {};
+          for (var i = 0; i < 10; i++)
+          {
+           var b = Math.floor(Math.random()*1000);
+           var c = Math.floor(Math.random()*1000);
+           dict[i] = [b,c];
+          }
+          return dict;
+      }
+
+      /*
+       * This user's circle
+       */
+      var mcirc = svg.append("circle")
+                     .style("stroke", "gray")
+                     .style("fill", "red")
+                     .attr("r", 40)
+                     .attr("cx", 50)
+                     .attr("cy", 50);
+
+
+      setInterval(function()
+      {
+
+        d3.select('html').on('mousemove', function()
+        {
+          cpos = d3.mouse(this);
+        });
+
+        websocket.send(JSON.stringify({id:}));
+         
+        update(getUpdates());
+
+        mcirc.transition()
+             .attr("cx",cpos[0])
+             .attr("cy",cpos[1]);
+          
+      }, 100);
+
+</script>
   </body>
 </html>
