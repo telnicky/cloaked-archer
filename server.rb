@@ -11,24 +11,24 @@ sockets = []
 EM.run {
   EM::WebSocket.run(:host => "127.0.0.1", :port => 8080) do |ws|
 
-sockets << ws
+    sockets << ws
 
     ws.onopen { |handshake|
-binding.pry
-      puts "WebSocket connection open"
+      puts "Connecting... "
       # Access properties on the EM::WebSocket::Handshake object, e.g.
       # path, query_string, origin, headers
 
       # Publish message to the client
-      ws.send "Hello Client, you connected to #{handshake.path}"
+      ws.send "Connecting... #{handshake.path}"
     }
 
     ws.onclose { puts "Connection closed" }
 
     ws.onmessage { |msg|
       puts "Recieved message: #{msg}"
+
       sockets.each do |s|
-        s.send "Ponggggg: #{msg}"
+        s.send "to everyone but sender: #{msg}" unless s.signature == ws.signature
       end
     }
   end

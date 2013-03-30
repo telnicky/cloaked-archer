@@ -2,7 +2,7 @@
   <head>
   <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js'></script>
   </head>
-  <body onload="init();">
+  <body>
     <div id="debug"></div>
     <script>
       function init() {
@@ -16,10 +16,9 @@
 
         var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
         var ws = new Socket("ws://localhost:8080");
-        var data = "whoooo";
         
         ws.onmessage = function(evt) { 
-          // update cursor
+          update_cursor();
           debug("Received: " + evt.data); 
         };
         
@@ -28,21 +27,23 @@
         };
         
         ws.onopen = function() {
-          debug("connected...");
-          ws.send("hello server");
-          ws.send("hello again");
-
-
-          $('#debug').click(send);          
+          debug("connected.");                  
         };
         
-        function send() {
-          ws.send(data);          
-        }
-
-        ws.send(data);
-
+        return ws;
       };
+
+      var data = "woooo";
+      var websocket = init();
+      $('#debug').click(send);
+
+      function send() {
+        websocket.send(data);          
+      }
+
+      function update_cursor() {
+        
+      }
     </script>
   </body>
 </html>
