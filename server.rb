@@ -1,5 +1,6 @@
 require 'em-websocket'
 require 'pry'
+require 'json'
 #
 # HTTP/1.1 101 Switching Protocols
 # Upgrade: websocket
@@ -19,16 +20,24 @@ EM.run {
       # path, query_string, origin, headers
 
       # Publish message to the client
-      ws.send "Connecting... #{handshake.path}"
+
+      ws.send({:id => ws.signature, :pos => [42,20], :on_open => true}.to_json)
+
     }
 
-    ws.onclose { puts "Connection closed" }
+    ws.onclose { 
+      puts "Connection closed" 
+      sockets.reject! {|socket| socket.signature == ws.signature}
+      sockets.each do |s|
+        s.send({:id => ws.signature, :pos => [42,20], :on_close => true}.to_json)        
+      end
+    }
 
     ws.onmessage { |msg|
       puts "Recieved message: #{msg}"
 
       sockets.each do |s|
-        s.send "to everyone but sender: #{msg}" unless s.signature == ws.signature
+        s.send msg unless s.signature == ws.signature
       end
     }
   end

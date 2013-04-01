@@ -6,6 +6,30 @@
   <body>
     <div id="debug"></div>
     <script>
+
+      var websocket = init();
+      var timer = null;
+      var cpos = [42,20];
+      var svg = d3.select("body").append("svg");
+
+      /*
+       * Holds map of id to circle for other users
+       */
+      var others = {};      
+
+      /*
+       * This user's circle
+       */
+      var mcirc = svg.append("circle")
+                     .style("stroke", "gray")
+                     .style("fill", "red")
+                     .attr("r", 40)
+                     .attr("cx", 50)
+                     .attr("cy", 50);
+            
+      /*
+       * init web socket
+       */
       function init() {
         
         function debug(string) {
@@ -19,8 +43,20 @@
         var ws = new Socket("ws://localhost:8080");
         
         ws.onmessage = function(evt) { 
-          update_cursor();
-          debug("Received: " + evt.data); 
+          msg = JSON.parse(evt.data);
+          
+          if(msg.on_open) {
+            ws.signature = msg.id;
+          } else if(msg.on_close) {
+            
+            if(msg.id in others) {
+              others[msg.id].remove();
+            }
+            delete others[msg.id];
+          } else {
+            update_cursor(msg);          
+          }
+
         };
         
         ws.onclose = function(event) {
@@ -34,83 +70,28 @@
         return ws;
       };
 
-      var data = "woooo";
-      var websocket = init();
-      $('#debug').click(send);
-
-      function send() {
-        websocket.send(data);          
-      }
-
-      function update_cursor() {
-        
+      /*
+       * update other clients position
+       */
+      function update_cursor(msg) {
+        if (!(msg.id in others)) {
+          others[msg.id] = svg.append("circle")
+                              .style("stroke", "gray")
+                              .style("fill", "blue")
+                              .attr("r", 40)
+                              .attr("cx", msg.pos[0])
+                              .attr("cy", msg.pos[1]);
+        } else {
+          others[msg.id].transition()
+                        .attr("cx", msg.pos[0])
+                        .attr("cy", msg.pos[1]);
+        }
       }
     
 
-    <!-- cirlces -->
-    
-      var timer = null;
-      var cpos = [42,20];
-
-      var svg = d3.select("body").append("svg");
-
       /*
-       * Holds map of id to circle for other users
+       * send new position every 1ms
        */
-      var others = {};
-
-      /*
-       * Expects a map of user ids to coordinate pairs
-       */
-      function update(map)
-      {         
-         for(key in map)
-         {    
-           if (!(key in others))
-           {
-              others[key] = svg.append("circle")
-                               .style("stroke", "gray")
-                               .style("fill", "blue")
-                               .attr("r", 40)
-                               .attr("cx", map[key][0])
-                               .attr("cy", map[key][1]);
-           }
-           else
-           {
-              others[key].transition()
-                         .attr("cx",map[key][0])
-                         .attr("cy",map[key][1]);
-           }
-         }        
-      }
-
-      /*
-       * Gets all the new positions for others
-       * For now it's random.
-       */
-      function getUpdates()
-      {
-        var dict = {};
-          for (var i = 0; i < 10; i++)
-          {
-           var b = Math.floor(Math.random()*1000);
-           var c = Math.floor(Math.random()*1000);
-           dict[i] = [b,c];
-          }
-          return dict;
-      }
-
-      /*
-       * This user's circle
-       */
-      var mcirc = svg.append("circle")
-                     .style("stroke", "gray")
-                     .style("fill", "red")
-                     .attr("r", 40)
-                     .attr("cx", 50)
-                     .attr("cy", 50);
-
-
       setInterval(function()
       {
 
@@ -119,10 +100,9 @@
           cpos = d3.mouse(this);
         });
 
-        websocket.send(JSON.stringify({id:}));
-         
-        update(getUpdates());
 
+        websocket.send(JSON.stringify({id: websocket.signature, pos: cpos}));
+         
         mcirc.transition()
              .attr("cx",cpos[0])
              .attr("cy",cpos[1]);
