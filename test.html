@@ -40,7 +40,7 @@
         }
 
         var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
-        var ws = new Socket("ws://128.110.65.179:4567");
+        var ws = new Socket("ws://cloaked-archer.herokuapp.com:4567");
         
         ws.onmessage = function(evt) { 
           msg = JSON.parse(evt.data);

@@ -10,7 +10,7 @@ require 'json'
 sockets = []
 
 EM.run {
-  EM::WebSocket.run(:host => "128.110.65.179", :port => ARGV[0]) do |ws|
+  EM::WebSocket.run(:host => "cloaked-archer.herokuapp.com", :port => ARGV[0]) do |ws|
 
     sockets << ws
 
