@@ -10,7 +10,7 @@ require 'json'
 sockets = []
 
 EM.run {
-  EM::WebSocket.run(:host => "127.0.0.1", :port => 8080) do |ws|
+  EM::WebSocket.run(:host => "128.110.65.179", :port => 4567) do |ws|
 
     sockets << ws
 
